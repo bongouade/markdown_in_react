@@ -1,25 +1,64 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { marked } from 'marked';
+
+import { sampleText } from './sampleText'
+
+class App extends Component {
+  state = {
+    text: sampleText
+  }
+
+  componentDidMount() {
+    const text = localStorage.getItem('text')
+    if (text) {
+      this.setState({ text })
+
+    }else{
+      this.setState({text: sampleText})
+    }
+
+    // console.log('Je suis monté.')
+  }
+
+  componentDidUpdate() {
+    const { text } = this.state
+    localStorage.setItem('text', text)
+    // console.log('je suis mis à jour.')
+  }
+
+  handleChange = event => {
+    const text = event.target.value
+    this.setState({ text })
+  }
+
+  renderText = text => {
+    const __html = marked(text, { sanitize: true, })
+    return { __html }
+
+  }
+
+  render() {
+    return (
+      <div className='container'>
+        <div className='row'>
+          <div className='col-sm-6'>
+            <textarea
+              onChange={this.handleChange}
+              value={this.state.text}
+              className='form-control'
+              rows="35"></textarea>
+          </div>
+          <div className='col-sm-6'>
+            <div dangerouslySetInnerHTML={this.renderText(this.state.text)}>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default App;
